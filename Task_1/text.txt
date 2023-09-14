@@ -1,0 +1,26 @@
+[
+  {
+    "oscar_year": 2021,
+    "title": "Nomadland",
+    "rating": 7.4,
+    "budget": 5000000
+  },
+  {
+    "oscar_year": 2020,
+    "title": "Parasite",
+    "rating": 8.6,
+    "budget": 11300000
+  },
+  {
+    "oscar_year": 2019,
+    "title": "Green Book",
+    "rating": 8.2,
+    "budget": 23000000
+  },
+  {
+    "oscar_year": 2018,
+    "title": "The Shape of Water",
+    "rating": 7.3,
+    "budget": 19500000
+  }
+]
