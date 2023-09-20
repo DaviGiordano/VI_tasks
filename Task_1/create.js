@@ -173,6 +173,7 @@ function createLineChart(data) {
     .x((d) => xScale(d.oscar_year))
     .y((d) => yScale(d.budget));
 
+
   // Append the line path to the chart
   svg
     .append("path")
@@ -184,6 +185,10 @@ function createLineChart(data) {
     .attr("stroke-width", 2);
 
   // Append circles using the data and scales to create data points on the line
+  const colorScale = d3
+  .scaleSequential(d3.interpolateBlues)
+  .domain([d3.min(data, (d) => d.rating), d3.max(data, (d) => d.rating)]);
+
   svg
     .selectAll(".circle")
     .data(data, (d) => d.title)
@@ -193,7 +198,7 @@ function createLineChart(data) {
     .attr("cx", (d) => xScale(d.oscar_year))
     .attr("cy", (d) => yScale(d.budget))
     .attr("r", 5)
-    .attr("fill", "steelblue")
+    .attr("fill",(d) => colorScale(d.rating))
     .attr("stroke", "black")
     .on("mouseover", handleMouseOver)
     .on("mouseout", handleMouseOut)
