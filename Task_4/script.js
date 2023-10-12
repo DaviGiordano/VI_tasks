@@ -39,28 +39,28 @@ function startDashboard() {
     // Store the CSV data into globalDataCapita
     globalDataCapita = results[1];
 
-    // Convert incomeperperson and alcconsumption data to numbers
+    // Convert incomeperperson, alcconsumption, armedforcesrate, co2emissions
+    //and internetuserate data to numbers
     globalDataCapita.forEach(function (d) {
       d.incomeperperson = +d.incomeperperson;
       d.alcconsumption = +d.alcconsumption;
-      d.armedforcesrate = +d.armedforcesrate;
-      d.co2emissions = +d.co2emissions;
-      d.internetuserate = +d.internetuserate;
-      d.hivrate = +d.hivrate;
+      d.employrate = +d.employrate
+
     });
 
     // Call functions to create the choropleth map and scatter plot
     createChoroplethMap();
     createScatterPlot();
-    createBeeSwarm();
   });
 }
+
+
 
 // Function to create the choropleth map
 function createChoroplethMap() {
   // Filter the data to remove entries with missing incomeperperson values
   currentData = globalDataCapita.filter(function (d) {
-    return d.incomeperperson != "";
+    return d.incomeperperson != "" && d.alcconsumption != "" && d.employrate != "";
   });
 
   // Create a title for the choropleth map
@@ -98,6 +98,14 @@ function createChoroplethMap() {
   // Create a path generator for the map
   const path = d3.geoPath().projection(projection);
 
+  function getTooltipText(d) {
+    const countryData = globalDataCapita.find((entry) => entry.country === d.properties.name);
+    if(countryData){
+      return `Country: ${d.properties.name}\nIncome per person: ${countryData.incomeperperson}\nAlcohol consumption: ${countryData.alcconsumption}\nEmploy rate: ${countryData.employrate}`;
+    }
+    else return 'Did not find attributes'
+  }
+
   // Add countries as path elements to the map
   mapGroup
     .selectAll(".country")
@@ -110,7 +118,14 @@ function createChoroplethMap() {
     .on("mouseover", handleMouseOver) // Function to handle mouseover event
     .on("mouseout", handleMouseOut)   // Function to handle mouseout event
     .append("title")
-    .text((d) => d.properties.name);
+    .text(getTooltipText);
+  
+  
+  
+  
+  
+  
+    //.text((d) => `Country: ${d.properties.name}\nIncome per person: ${d.incomeperperson}`);
 
   // Set the fill color of each country based on its incomeperperson value
   currentData.forEach((element) => {
@@ -192,7 +207,7 @@ function createChoroplethMap() {
 function createScatterPlot() {
   // Filter the data to remove entries with missing incomeperperson or alcconsumption values
   currentData = globalDataCapita.filter(function (d) {
-    return d.incomeperperson != "" && d.alcconsumption != "";
+    return d.incomeperperson != "" && d.alcconsumption != "" && d.employrate!= "";
   });
 
   // Create an SVG element to hold the scatter plot
@@ -236,7 +251,10 @@ function createScatterPlot() {
     .on("mouseover", handleMouseOver) // Function to handle mouseover event
     .on("mouseout", handleMouseOut)   // Function to handle mouseout event
     .append("title")
-    .text((d) => d.country);
+    .text((d) => `Country: ${d.country}\nIncome per person: ${d.incomeperperson}\nAlcohol consumption: ${d.alcconsumption}\nEmploy rate: ${d.employrate}`);
+
+    
+    
 
   // Create tick marks and labels for the x and y axes
   var xTicks = [];
@@ -286,114 +304,4 @@ function createScatterPlot() {
     .style("text-anchor", "middle")
     .attr("transform", "rotate(-90)")
     .text("Alcohol Consumption");
-}
-
-
-function createBeeSwarm(){
-  maxRadius = 15;
-  minRadius = 5;
-
-  currentData = globalDataCapita.filter(function (d){
-    return d.armedforcesrate != "" && d.co2emissions != "" && d.internetuserate != "" && d.hivrate != "";
-  })
-
-  const svg = d3
-    .select('#beeSwarm')
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")  
-    .attr("transform", `translate(${margin.left/2},${margin.top})`);
-
-  const xScale = d3
-    .scaleLinear()
-    .domain([
-      d3.min(currentData, (d) => d.hivrate),
-      d3.max(currentData, (d) => d.hivrate),
-    ])
-    .range([0, width]);
-
-  const radiusScale = d3
-    .scaleLinear()
-    .domain([
-      d3.min(currentData, (d) => d.co2emissions),
-      d3.max(currentData, (d) => d.co2emissions),
-    ])
-    .range([minRadius, maxRadius]);
-
-  const colorScale = d3
-    .scaleLinear()
-    .domain([
-      d3.min(currentData, (d) => d.internetuserate),
-      d3.max(currentData, (d) => d.internetuserate),
-    ])
-    .range([0, 1]);
-  currentData.forEach(d => d.y = 200);
-
-  const average = d3.mean(data, d => d.hivrate);
-  var line = d3.svg.line()
-  .x(function(d, i) {
-    return average;
-  })
-  .y(function(d, i) {
-    return y(dataSum / data.length);
-  });
-
-
-  let simulation = d3.forceSimulation(currentData)
-  .force("y", d3.forceY(200).strength(0.05))
-  .force("x", d3.forceX((d) => {return xScale(d.hivrate);}).strength(1))
-  .force("collide", d3.forceCollide((d) => radiusScale(d.co2emissions)+1))
-  .on("tick", tick)
-  .stop();
-
-  svg
-    .selectAll('.circle')
-    .data(currentData, (d) => d.country)
-    .enter()
-    .append("circle")
-    // .attr("class", "circleBeeSwarm")
-    .attr("class", "circleBeeSwarm")
-    .attr("cx", (d) => xScale(d.hivrate))
-    .attr("cy", 200)
-    .attr("r", (d) => radiusScale(d.co2emissions))
-    .attr("fill", (d) => d3.interpolateBlues(colorScale(d.internetuserate)))
-    .attr("stroke", "black")
-    .append("title")
-    .text((d) => d.country);
-
-    setTimeout(function(){
-      simulation.restart();
-    }, 200);
-
-  function tick(){
-    d3.selectAll('.circleBeeSwarm')
-      .attr('cy', d => d.y)
-      .attr('cx', d => d.x);
-  }
-
-  var xTicks = [];
-
-  for (let index = 0; index <= 1; index += 0.25){
-    xTicks.push(Math.round(xScale.invert(index*width)));
-  }
-  
-  svg
-    .append("g")
-    .attr("class", "x-axis")
-    .attr("transform", `translate(0, ${height})`)
-    .call(
-      d3.
-        axisBottom(xScale)
-    )
-
-  svg
-    .append("text")
-    .attr("class", "x-axis-label")
-    .attr("x", width / 2)
-    .attr("y", height + margin.top + 20)
-    .style("text-anchor", "middle")
-    .text("HIV rate");
-  
-
 }
