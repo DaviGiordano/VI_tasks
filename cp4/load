@@ -1,0 +1,136 @@
+// Function to create the scatter plot
+function createBeeSwarm() {
+    // Filter the data to remove entries with missing incomeperperson or alcconsumption values
+    const currentData = globalDataCapita.filter((d) => {
+      return (
+        d.incomeperperson != "" &&
+        d.armedforcesrate != "" &&
+        d.co2emissions != "" &&
+        d.internetuserate != "" &&
+        d.contry != NaN
+      );
+    });
+  
+    // Create an SVG element to hold the scatter plot
+    const svg = d3
+      .select("#beeswarm")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+  
+    const beeGroup = svg.append("g");
+  
+    
+    const xScale = d3
+      .scaleLog()
+      .domain([
+        d3.min(currentData, (d) => d.armedforcesrate),
+        d3.max(currentData, (d) => d.armedforcesrate),
+      ])
+      .range([0, width]);
+
+ 
+    let co2domain = d3.extent(currentData.map((d) => d.co2emissions));
+    let size = d3.scaleSqrt().domain(co2domain).range([2, 20]);
+  
+    const colorScale = d3
+    .scaleSequential(d3.interpolateBlues) // You can use a different color scale if needed
+    .domain([
+      d3.min(currentData, (d) => d.internetuserate),
+      d3.max(currentData, (d) => d.internetuserate),
+    ]);
+  
+    beeGroup
+    .selectAll(".circ")
+    .data(currentData)
+    .enter()
+    .append("circle")
+    .attr("class", "circ")
+    .attr("stroke", "black")
+    .attr("fill", (d) => colorScale(d.internetuserate))
+    .attr("r", (d) => size(d.co2emissions))
+    .attr("cx", (d) => xScale(d.armedforcesrate))
+    .attr("cy", (d) => yScale(d.incomeperperson));
+  
+    svg
+    .append("text")
+    .attr("class", "x-axis-label")
+    .attr("x", width / 2)
+    .attr("y", height + margin.top + 20)
+    .style("text-anchor", "middle")
+    .text("Armed forces rate");
+  
+  svg
+    .append("text")
+    .attr("class", "y-axis-label")
+    .attr("x", -height / 2)
+    .attr("y", -margin.left + 30)
+    .style("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .text("Income per person");
+  
+  }
+
+
+
+
+
+function createBeeSwarm() {
+  // Filter the data to remove entries with missing values for armedforcesrate, co2emissions, and internetuserate
+  const currentData = globalDataCapita.filter((d) => {
+    return (
+      d.armedforcesrate != "" &&
+      d.co2emissions != "" &&
+      d.internetuserate != ""
+    );
+  });
+
+  console.log(currentData);
+
+  // Create an SVG element to hold the beeswarm chart
+  const svg = d3
+    .select("#beeswarm")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  // Create a beeswarm layout
+  const beeswarm = d3
+    .beeswarm()
+    .data(currentData)
+    .distributeOn((d) => d.armedforcesrate) // X-axis: armedforcesrate
+    .radius((d) => d.co2emissions * 0.1) // Radius: co2emissions (scaled for visibility)
+    .orientation("horizontal"); // Horizontal orientation
+
+  // Create circles for each data point in the beeswarm
+  svg
+    .selectAll(".circle")
+    .enter()
+    .append("circle")
+    .attr("class", "circle data")
+    .attr("cx", (d) => d.x)
+    .attr("cy", (d) => d.y)
+    .attr("r", (d) => d.radius)
+    .style("fill", (d) => d3.interpolateBlues(d.internetuserate)); // Fill color: internetuserate
+
+  // Add labels for the x and y axes
+  svg
+    .append("text")
+    .attr("class", "x-axis-label")
+    .attr("x", width / 2)
+    .attr("y", height + margin.top + 20)
+    .style("text-anchor", "middle")
+    .text("Armed Forces Rate");
+
+  svg
+    .append("text")
+    .attr("class", "y-axis-label")
+    .attr("x", -height / 2)
+    .attr("y", -margin.left + 30)
+    .style("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .text("Co2 Emissions (Radius)");
+
+}
