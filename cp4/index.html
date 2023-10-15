@@ -16,27 +16,56 @@
             .visualization {
                 padding: 10px;
             }
+            /* Style for the container */
+            .container {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            /* Style for labels */
+            label {
+                font-size: 14px; /* Adjust the font size as needed */
+                margin-right: 10px; /* Add spacing between labels and input elements */
+            }
+
+            /* Style for number input fields */
+            input[type="number"] {
+                width: 60px; /* Adjust the width as needed */
+                padding: 5px; /* Add padding to make it visually smaller */
+                font-size: 14px; /* Adjust the font size as needed */
+            }
+
+            /* Style for the Apply Filter button */
+            #filterButton {
+                padding: 5px 10px; /* Adjust the padding to make it smaller */
+                font-size: 14px; /* Adjust the font size as needed */
+            }      
         </style>
+
+        
+    </head>
+    <body onload="startDashboard()">
+        <div class="dashboard">
+            <div class="container">
+                <label for="minPages">Minimum Pages:</label>
+                <input type="number" id="minPages" value="0">
+                <label for="maxPages">Maximum Pages:</label>
+                <input type="number" id="maxPages" value="1000">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate">
+                <button id="filterButton">Apply Filter</button>
+            </div>
+            
+            <div class="visualization" id="lineChart"></div>
+        </div>
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
         <script src="https://unpkg.com/d3-beeswarm@0.0.5/build/d3-beeswarm.min.js"></script>
         <script src="script.js"></script>
         <script src="linked.js"></script>
-        
-    </head>
-    <body onload="startDashboard()">
-        <div class="dashboard">
-            <div class="container"></div>
-            <div class="visualization" id="lineChart"></div>
-            <input
-            type="range"
-            min="0"
-            max="2000" 
-            value="0"
-            step="1"
-            id="pageFilter"
-        />
-        <span id="pageFilterValue">0</span> pages
-        </div>
     </body>
 </html>
