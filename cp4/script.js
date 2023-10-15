@@ -270,3 +270,76 @@ svg.selectAll("mylabels")
 
   
 }
+
+
+////////////////////////////////// PAOLO
+
+
+// Define a variable to store the current filter value
+let pageFilterValue = 0;
+
+// Function to update the line chart based on the selected filter
+function updateLineChart() {
+  // Filter the data to include only books with pages greater than or equal to the filter value
+  const filteredData = currentData.filter((d) => d.pages >= pageFilterValue);
+
+  // Create data lists for filtered data
+  const filtered_data_norm_rating = create_data_list("norm_rating", filteredData);
+  const filtered_data_norm_num_awards = create_data_list("norm_num_awards", filteredData);
+  const filtered_data_norm_num_ratings = create_data_list("norm_num_ratings", filteredData);
+
+  // Update the scales with filtered data
+  const yScale_norm_rating = d3
+      .scaleLinear()
+      .domain([d3.min(filtered_data_norm_rating, (d) => d[1]), d3.max(filtered_data_norm_rating, (d) => d[1],)])
+      .range([height, 0]);
+
+  const yScale_norm_num_awards = d3
+      .scaleLinear()
+      .domain([d3.min(filtered_data_norm_num_awards, (d) => d[1]), d3.max(filtered_data_norm_num_awards, (d) => d[1],)])
+      .range([height, 0]);
+
+  const yScale_norm_num_ratings = d3
+      .scaleLinear()
+      .domain([d3.min(filtered_data_norm_num_ratings, (d) => d[1]), d3.max(filtered_data_norm_num_ratings, (d) => d[1],)])
+      .range([height, 0]);
+
+  // Update the line paths on the chart
+  // Example for updating the "Rating" line:
+  svg.select(".line_norm_rating")
+      .datum(filtered_data_norm_rating)
+      .attr("d", line_norm_rating);
+
+  // Similar updates for other lines ("Number of Awards" and "Number of Reviews")
+
+  // Redraw the x and y axes
+  svg.select(".x-axis")
+      .call(d3.axisBottom(xScale));
+
+  svg.select(".y-axis")
+      .call(d3.axisLeft(yScale));
+
+  // ...
+
+  // Add labels for the x and y axes (if needed)
+  // ...
+}
+
+
+// Event listener for the slider
+const pageFilterSlider = document.getElementById("pageFilter");
+const pageFilterValueText = document.getElementById("pageFilterValue");
+
+pageFilterSlider.addEventListener("input", function () {
+    // Get the selected filter value from the slider
+    pageFilterValue = +this.value;
+
+    // Update the displayed filter value
+    pageFilterValueText.textContent = pageFilterValue + " pages";
+
+    // Update the line chart based on the selected filter
+    updateLineChart();
+});
+
+// Call the initial update to display all data
+updateLineChart();
