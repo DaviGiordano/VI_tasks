@@ -1,177 +1,192 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>World Choropleth Map</title>
-        <style>
-            .container {
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>World Choropleth Map</title>
+            <style>
+                .container {
+                    display: flex;
+                }
+                .dashboard {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    grid-template-rows: 1fr;
+                    gap: 20px;
+                    padding: 20px;
+                }
+                .visualization {
+                    padding: 10px;
+                }
+                /* Style for the container */
+                .container {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    margin-bottom: 10px;
+                }
+
+            /* Style for the filter group */
+            .filter-group {
                 display: flex;
-            }
-            .dashboard {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: 1fr;
-                gap: 20px;
-                padding: 20px;
-            }
-            .visualization {
-                padding: 10px;
-            }
-            /* Style for the container */
-            .container {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
+                flex-direction: column;
+                align-items: left;
                 margin-bottom: 10px;
             }
 
-        /* Style for the filter group */
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            align-items: left;
-            margin-bottom: 10px;
-        }
+            /* Style for the filter rows (number of pages & date, genres & button) */
+            .filter-row {
+                display: flex;
+                align-items: left;
+                margin-bottom: 20px;
+            }
 
-        /* Style for the filter rows (number of pages & date, genres & button) */
-        .filter-row {
-            display: flex;
-            align-items: left;
-            margin-bottom: 20px;
-        }
+            /* Style for labels */
+            .filter-row label {
+                font-size: 14px;
+                margin-right: 10px;
+            }
 
-        /* Style for labels */
-        .filter-row label {
-            font-size: 14px;
-            margin-right: 10px;
-        }
+            /* Style for number input fields */
+            .filter-row input[type="number"] {
+                width: 60px;
+                padding: 5px;
+                font-size: 14px;
+            }
 
-        /* Style for number input fields */
-        .filter-row input[type="number"] {
-            width: 60px;
-            padding: 5px;
-            font-size: 14px;
-        }
+            /* Style for checkboxes */
+            .filter-row input[type="checkbox"] {
+                margin-right: 5px;
+            }
 
-        /* Style for checkboxes */
-        .filter-row input[type="checkbox"] {
-            margin-right: 5px;
-        }
+            /* Style for the Apply Filter button */
+            #filterButton {
+                padding: 5px 10px;
+                font-size: 14px;
+            }
 
-        /* Style for the Apply Filter button */
-        #filterButton {
-            padding: 5px 10px;
-            font-size: 14px;
-        }
+            /* Style for the custom dropdown */
+            .custom-dropdown {
+                position: relative;
+                display: inline-block;
+                width: 200px; /* Adjust the width as needed */
+            }
 
-        /* Style for the custom dropdown */
-        .custom-dropdown {
-            position: relative;
-            display: inline-block;
-            width: 200px; /* Adjust the width as needed */
-        }
+            .selected-genres {
+                border: 1px solid #ccc;
+                padding: 8px;
+                cursor: pointer;
+            }
 
-        .selected-genres {
-            border: 1px solid #ccc;
-            padding: 8px;
-            cursor: pointer;
-        }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #f9f9f9;
+                min-width: 200px; /* Adjust the width as needed */
+                border: 1px solid #ccc;
+                max-height: 150px; /* Set a max height for the dropdown, and add overflow-y for scrolling */
+                overflow-y: auto;
+            }
 
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 200px; /* Adjust the width as needed */
-            border: 1px solid #ccc;
-            max-height: 150px; /* Set a max height for the dropdown, and add overflow-y for scrolling */
-            overflow-y: auto;
-        }
+            /* Show the dropdown when the "selected-genres" is clicked */
+            .custom-dropdown.active .dropdown-content {
+                display: block;
+            }
 
-        /* Show the dropdown when the "selected-genres" is clicked */
-        .custom-dropdown.active .dropdown-content {
-            display: block;
-        }
+            /* Style for selected options */
+            #genreSelect {
+                width: 100%;
+            }
 
-        /* Style for selected options */
-        #genreSelect {
-            width: 100%;
-        }
+            /* Styling for selected options when expanded */
+            #genreSelect[multiple] {
+                height: auto;
+            }
+            </style>
 
-        /* Styling for selected options when expanded */
-        #genreSelect[multiple] {
-            height: auto;
-        }
-        </style>
+            
+        </head>
+        <body onload="startDashboard()">
 
-        
-    </head>
-    <body onload="startDashboard()">
-        <div class="dashboard">
-            <div class="container">
-                <div class="filter-group">
-                    <div class="filter-row">
-                        <label for="minPages">Minimum Pages:</label>
-                        <input type="number" id="minPages" value="10">
-                        <label for="maxPages">Maximum Pages:</label>
-                        <input type="number" id="maxPages" value="2000">
-                    </div>
+            <div class="dashboard">
+                <div class="container">
 
-                    <div class="filter-row">
-                        <label for="startDate">Start Date:</label>
-                        <input type="date" id="startDate">
-                        <label for="endDate">End Date:</label>
-                        <input type="date" id="endDate">
-                    </div>
-
-
-                    <div class="filter-row">
-                        <label for="genreSelect">Genres:</label>
- 
-                         <div class="custom-dropdown">
-                            <button class="dropbtn">Select genres</button>
-                            <div class="dropdown-content">
-                                <select id="genreSelect" multiple size="20">
-                                    <option value="Adventure">Adventure</option>
-                                    <option value="Biography">Biography</option>
-                                    <option value="Business">Business</option>
-                                    <option value="Childrens">Childrens</option>
-                                    <option value="Classics">Classics</option>
-                                    <option value="Fantasy">Fantasy</option>
-                                    <option value="Fiction">Fiction</option>
-                                    <option value="Graphic Novels">Graphic Novels</option>
-                                    <option value="Historical Fiction">Historical Fiction</option>
-                                    <option value="Horror">Horror</option>
-                                    <option value="Mystery">Mystery</option>
-                                    <option value="Nonfiction">Nonfiction</option>
-                                    <option value="Poetry">Poetry</option>
-                                    <option value="Religion">Religion</option>
-                                    <option value="Romance">Romance</option>
-                                    <option value="Science">Science</option>
-                                    <option value="Science Fiction">Science Fiction</option>
-                                    <option value="Self Help">Self Help</option>
-                                    <option value="True Crime">True Crime</option>
-                                    <option value="Young Adult">Young Adult</option>
-                                </select>
+                    <!-- Number of pages filters -->
+                    <div class="filter-group">
+                        <div class="filter-row">
+                            <label for="minPages">Minimum Pages:</label>
+                            <input type="number" id="minPages" value="10">
+                            <label for="maxPages">Maximum Pages:</label>
+                            <input type="number" id="maxPages" value="2000">
+                        </div>
+                        
+                        <!-- Start and end date filters -->
+                        <div class="filter-row">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" id   ="startDate" value="1722-03-25">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" id="endDate" value="2020-11-30">
+                        </div>
+                        
+                        <!-- Genres filters -->
+                        <div class="filter-row">
+                            <label for="genreSelect">Genres:</label>
+                            <div class="custom-dropdown">
+                                <button class="dropbtn">Select genres</button>
+                                <div class="dropdown-content">
+                                    <div>
+                                        <input type="checkbox" id="selectAllGenres"> Select All Genres
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="removeAllGenres"> Remove All Genres
+                                    </div>
+                                    <div id="genreCheckboxList">
+                                        <div><label><input type="checkbox" value="Adventure" checked> Adventure</label></div>
+                                        <div><label><input type="checkbox" value="Biography" checked> Biography</label></div>
+                                        <div><label><input type="checkbox" value="Business" checked> Business</label></div>
+                                        <div><label><input type="checkbox" value="Childrens" checked> Childrens</label></div>
+                                        <div><label><input type="checkbox" value="Classics" checked> Classics</label></div>
+                                        <div><label><input type="checkbox" value="Fantasy" checked> Fantasy</label></div>
+                                        <div><label><input type="checkbox" value="Fiction" checked> Fiction</label></div>
+                                        <div><label><input type="checkbox" value="Graphic Novels" checked> Graphic Novels</label></div>
+                                        <div><label><input type="checkbox" value="Historical Fiction" checked> Historical Fiction</label></div>
+                                        <div><label><input type="checkbox" value="Horror" checked> Horror</label></div>
+                                        <div><label><input type="checkbox" value="Mystery" checked> Mystery</label></div>
+                                        <div><label><input type="checkbox" value="Nonfiction" checked> Nonfiction</label></div>
+                                        <div><label><input type="checkbox" value="Poetry" checked> Poetry</label></div>
+                                        <div><label><input type="checkbox" value="Religion" checked> Religion</label></div>
+                                        <div><label><input type="checkbox" value="Romance" checked> Romance</label></div>
+                                        <div><label><input type="checkbox" value="Science" checked> Science</label></div>
+                                        <div><label><input type="checkbox" value="Science Fiction" checked> Science Fiction</label></div>
+                                        <div><label><input type="checkbox" value="Self Help" checked> Self Help</label></div>
+                                        <div><label><input type="checkbox" value="True Crime" checked> True Crime</label></div>
+                                        <div><label><input type="checkbox" value="Young Adult" checked> Young Adult</label></div>
+                                    </div>
+                                </div>
                             </div>
-                        </div> 
-                    </div>
-
-                    <div class="filter-row">
-                        <button id="filterButton">Apply Filter</button>
-                    </div>
+                        </div>
+                        
+                        
+                        <!-- Apply filters button -->
+                        <div class="filter-row">
+                            <button id="filterButton">Apply Filter</button>
+                        </div>
+                        </div>
                     </div>
                 </div>
+                
+                <!-- Show average button for the line chart idiom -->
+                <div class="filter-row">
+                    <label for="showAverageLine">Show Average Line:</label>
+                    <input type="checkbox" id="showAverageLine">
+                  </div>
+
+                <!-- Line chart idiom -->
+                <div class="visualization" id="lineChart"></div>
             </div>
-            <div class="filter-row">
-                <label for="showAverageLine">Show Average Line:</label>
-                <input type="checkbox" id="showAverageLine">
-              </div>
-            
-            <div class="visualization" id="lineChart"></div>
-        </div>
-        <script src="https://d3js.org/d3.v7.min.js"></script>
-        <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
-        <script src="https://unpkg.com/d3-beeswarm@0.0.5/build/d3-beeswarm.min.js"></script>
-        <script src="script.js"></script>
-        <script src="linked.js"></script>
-    </body>
-</html>
+            <script src="https://d3js.org/d3.v7.min.js"></script>
+            <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+            <script src="https://unpkg.com/d3-beeswarm@0.0.5/build/d3-beeswarm.min.js"></script>
+            <script src="script.js"></script>
+            <script src="linked.js"></script>
+
+        </body>
+    </html>
