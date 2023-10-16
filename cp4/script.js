@@ -271,12 +271,35 @@ svg.selectAll("mylabels")
   
 }
 
+//for checking if the checkbox for showing average line is clicked
+var show_average = 0
+function checkAverageLine() {
+  // Get the checkbox
+  var checkBox = document.getElementById("showAverageLine");
+  if(show_average == 0){
+    show_average = 1
+    console.log("averageLine checked")
+  }
+  else if(show_average == 1){
+    show_average = 0
+    console.log("averageLine UNchecked")
+  }
+  // Call functions to create the line chart with the filtered data
+  updateLineChart();
+  
+  
+}
 
+document.getElementById("showAverageLine").addEventListener("click", checkAverageLine);
 
 ////////////////// PAOLO ////////////////////////////
 
 // Add an event listener for the "Apply Filter" button
 document.getElementById("filterButton").addEventListener("click", updateLineChart);
+
+
+
+//document.getElementById("showAverageLine").addEventListener("click", updateLineChart);
 
 // Function to update the line chart based on the selected range of pages and dates
 function updateLineChart() {
@@ -290,7 +313,6 @@ function updateLineChart() {
 
     // Get the selected genres from the dropdown
     const selectedGenres = getSelectedGenres();
-
 
     // Log a message to the console when the function is called
     console.log("updateLineChart called with minPages:", minPages, "and maxPages:", maxPages);
@@ -325,8 +347,25 @@ function updateLineChart() {
  const data_norm_rating = create_data_list("norm_rating");
  const data_norm_num_awards = create_data_list("norm_num_awards");
  const data_norm_num_ratings = create_data_list("norm_num_ratings");
+ const data_average = [];
+ if(show_average == 1){
  
+  for(let i = 0; i < data_norm_rating.length; i++){
+    
+    var norm_rating = data_norm_rating[i][1]
+    var norm_num_awards = data_norm_num_awards[i][1]
+    var norm_num_ratings = data_norm_num_ratings[i][1]
+      
+    // console.log("i:", i)
+    // console.log("norm rating", data_norm_rating[i][1])
+    // console.log("norm num_awards", data_norm_num_awards[i][1])
+    // console.log("norm num ratings", data_norm_num_ratings[i][1])
+    // console.log("average", (data_norm_rating[i][1] +  data_norm_num_awards[i][1] + data_norm_num_ratings[i][1]) / 3)
+    data_average.push([data_norm_rating[i][0], (norm_rating + norm_num_awards + norm_num_ratings) / 3]);
+  }
+ }
 
+ 
  function avg_y(x, attribute){
    var count = 0;
    var attrSum = 0;
@@ -407,6 +446,10 @@ function create_data_list(attribute) {
 //FOR CREATING LEGEND
 var keys = ["Rating", "Number of Awards", "Number of Reviews"]
 
+if(show_average == 1){
+  keys = ["Rating", "Number of Awards", "Number of Reviews", "Average"]
+}
+
 var color = d3.scaleOrdinal()
  .domain(keys)
  .range(d3.schemeSet2);
@@ -453,6 +496,21 @@ svg.append("path")
  .attr("stroke", color("Number of Reviews"))
  .attr("stroke-width", 1.5)
  .attr("d", line_norm_num_ratings(data_norm_num_ratings));
+
+ if(show_average){
+  console.log("want to show avarage")
+  var line_average = d3.line()
+  .x(function(d) { return xScale(d[0]); }) 
+  .y(function(d) { return yScale(d[1]); }) 
+  .curve(d3.curveMonotoneX)
+  
+  svg.append("path")
+   .attr("fill", "none")
+   .attr("stroke", "red")
+   .attr("stroke-width", 1.5)
+   .attr("d", line_average(data_average));
+ }
+
 
 
  //   data_norm_rating = create_data_list("norm_rating");
