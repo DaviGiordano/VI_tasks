@@ -24,24 +24,82 @@
                 margin-bottom: 10px;
             }
 
-            /* Style for labels */
-            label {
-                font-size: 14px; /* Adjust the font size as needed */
-                margin-right: 10px; /* Add spacing between labels and input elements */
-            }
+        /* Style for the filter group */
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+            margin-bottom: 10px;
+        }
 
-            /* Style for number input fields */
-            input[type="number"] {
-                width: 60px; /* Adjust the width as needed */
-                padding: 5px; /* Add padding to make it visually smaller */
-                font-size: 14px; /* Adjust the font size as needed */
-            }
+        /* Style for the filter rows (number of pages & date, genres & button) */
+        .filter-row {
+            display: flex;
+            align-items: left;
+            margin-bottom: 20px;
+        }
 
-            /* Style for the Apply Filter button */
-            #filterButton {
-                padding: 5px 10px; /* Adjust the padding to make it smaller */
-                font-size: 14px; /* Adjust the font size as needed */
-            }      
+        /* Style for labels */
+        .filter-row label {
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        /* Style for number input fields */
+        .filter-row input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        /* Style for checkboxes */
+        .filter-row input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        /* Style for the Apply Filter button */
+        #filterButton {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        /* Style for the custom dropdown */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 200px; /* Adjust the width as needed */
+        }
+
+        .selected-genres {
+            border: 1px solid #ccc;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 200px; /* Adjust the width as needed */
+            border: 1px solid #ccc;
+            max-height: 150px; /* Set a max height for the dropdown, and add overflow-y for scrolling */
+            overflow-y: auto;
+        }
+
+        /* Show the dropdown when the "selected-genres" is clicked */
+        .custom-dropdown.active .dropdown-content {
+            display: block;
+        }
+
+        /* Style for selected options */
+        #genreSelect {
+            width: 100%;
+        }
+
+        /* Styling for selected options when expanded */
+        #genreSelect[multiple] {
+            height: auto;
+        }
         </style>
 
         
@@ -49,15 +107,59 @@
     <body onload="startDashboard()">
         <div class="dashboard">
             <div class="container">
-                <label for="minPages">Minimum Pages:</label>
-                <input type="number" id="minPages" value="0">
-                <label for="maxPages">Maximum Pages:</label>
-                <input type="number" id="maxPages" value="1000">
-                <label for="startDate">Start Date:</label>
-                <input type="date" id="startDate">
-                <label for="endDate">End Date:</label>
-                <input type="date" id="endDate">
-                <button id="filterButton">Apply Filter</button>
+                <div class="filter-group">
+                    <div class="filter-row">
+                        <label for="minPages">Minimum Pages:</label>
+                        <input type="number" id="minPages" value="10">
+                        <label for="maxPages">Maximum Pages:</label>
+                        <input type="number" id="maxPages" value="2000">
+                    </div>
+
+                    <div class="filter-row">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate">
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate">
+                    </div>
+
+
+                    <div class="filter-row">
+                        <label for="genreSelect">Genres:</label>
+ 
+                         <div class="custom-dropdown">
+                            <button class="dropbtn">Select genres</button>
+                            <div class="dropdown-content">
+                                <select id="genreSelect" multiple size="20">
+                                    <option value="Adventure">Adventure</option>
+                                    <option value="Biography">Biography</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Childrens">Childrens</option>
+                                    <option value="Classics">Classics</option>
+                                    <option value="Fantasy">Fantasy</option>
+                                    <option value="Fiction">Fiction</option>
+                                    <option value="Graphic Novels">Graphic Novels</option>
+                                    <option value="Historical Fiction">Historical Fiction</option>
+                                    <option value="Horror">Horror</option>
+                                    <option value="Mystery">Mystery</option>
+                                    <option value="Nonfiction">Nonfiction</option>
+                                    <option value="Poetry">Poetry</option>
+                                    <option value="Religion">Religion</option>
+                                    <option value="Romance">Romance</option>
+                                    <option value="Science">Science</option>
+                                    <option value="Science Fiction">Science Fiction</option>
+                                    <option value="Self Help">Self Help</option>
+                                    <option value="True Crime">True Crime</option>
+                                    <option value="Young Adult">Young Adult</option>
+                                </select>
+                            </div>
+                        </div> 
+                    </div>
+
+                    <div class="filter-row">
+                        <button id="filterButton">Apply Filter</button>
+                    </div>
+                    </div>
+                </div>
             </div>
             
             <div class="visualization" id="lineChart"></div>

@@ -288,9 +288,14 @@ function updateLineChart() {
     const startDate = new Date(document.getElementById("startDate").value);
     const endDate = new Date(document.getElementById("endDate").value);
 
+    // Get the selected genres from the dropdown
+    const selectedGenres = getSelectedGenres();
+
+
     // Log a message to the console when the function is called
     console.log("updateLineChart called with minPages:", minPages, "and maxPages:", maxPages);
     console.log("Start Date:", startDate, "End Date:", endDate);
+    console.log("Selected Genres:", selectedGenres);
 
     // Filter the data based on the selected range of pages and dates
     const filteredData = currentData.filter(function (d) {
@@ -300,6 +305,7 @@ function updateLineChart() {
             d.pages <= maxPages &&
             bookDate >= startDate &&
             bookDate <= endDate &&
+            selectedGenres.some(genre => d.genres.includes(genre)) && // Check if the book has at least one selected genre
             d.norm_rating != "" && d.norm_num_awards != "" && d.norm_num_ratings != "" && d.pages != "" && d.num_in_series != ""
         );
     });
@@ -523,3 +529,40 @@ svg.selectAll("mylabels")
    .attr("transform", "rotate(-90)")
    .text("Success metric");
  }
+
+
+ // Function to get the selected genres from the dropdown
+function getSelectedGenres() {
+  const genreSelect = document.getElementById("genreSelect");
+  const selectedGenres = [];
+  for (let i = 0; i < genreSelect.options.length; i++) {
+      if (genreSelect.options[i].selected) {
+          selectedGenres.push(genreSelect.options[i].value);
+      }
+  }
+  return selectedGenres;
+}
+
+
+// Toggle the dropdown when the "selected-genres" is clicked
+const customDropdown = document.querySelector('.custom-dropdown');
+const dropdownContent = customDropdown.querySelector('.dropdown-content');
+
+customDropdown.addEventListener('click', function (event) {
+    if (event.target !== dropdownContent) {
+        this.classList.toggle('active');
+    }
+});
+
+// Handle click outside to close the dropdown
+document.addEventListener('click', function (e) {
+    if (!customDropdown.contains(e.target)) {
+        customDropdown.classList.remove('active');
+    }
+});
+
+// Prevent the dropdown from closing when interacting with options
+dropdownContent.addEventListener('click', function (e) {
+    e.stopPropagation(); // Prevent the click event from bubbling up
+});
+
