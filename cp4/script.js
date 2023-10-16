@@ -307,115 +307,14 @@ function updateLineChart() {
     console.log("Data for path creation:", filteredData);
 
     // Call functions to create the line chart with the filtered data
-    creaLineChart(filteredData);
+    redrawLineChart(filteredData);
 }
 
 
-// // Function to create the line chart
-// function creaLineChart(data) {
-// // Clear the previous chart if it exists
-// d3.select("#lineChart").selectAll("*").remove();
-
-// // Define the margin and dimensions for the chart area
-// const margin = {
-//     top: 20,
-//     right: 20,
-//     bottom: 50,
-//     left: 80,
-// };
-// const width = 500 - margin.left - margin.right;
-// const height = 400 - margin.top - margin.bottom;
-
-// // Create an SVG container for the chart
-// const svg = d3
-//     .select("#lineChart")
-//     .append("svg")
-//     .attr("width", width + margin.left + margin.right)
-//     .attr("height", height + margin.top + margin.bottom)
-//     .append("g")
-//     .attr("transform", `translate(${margin.left},${margin.top})`);
-
-// // Define scales for x and y axes based on your data attributes
-// const xScale = d3
-//     .scaleLinear()
-//     .domain([
-//         d3.min(data, (d) => d.num_in_series),
-//         d3.max(data, (d) => d.num_in_series),
-//     ])
-//     .range([0, width]);
-
-// const yScale = d3
-//     .scaleLinear()
-//     .domain([0, 1])
-//     .range([height, 0]);
-
-// // Define and draw the lines on the chart based on your data attributes
-// const line = d3.line()
-//     .x(function (d) {
-//         return xScale(d.num_in_series);
-//     })
-//     .y(function (d) {
-//         return yScale(d.success_rate);
-//     })
-//     .curve(d3.curveMonotoneX);
-
-// ////// ERRORE QUI  
-
-//  console.log("Data for path creation:", data);
-//  console.log("Resulting path string:", line(data));
-
-// const lines = svg
-//     .selectAll(".line")
-//     .data([data])
-//     .enter()
-//     .append("path")
-//     .attr("class", "line")
-//     .attr("d", line)
-//     .style("fill", "none")
-//     .style("stroke", "steelblue")
-//     .style("stroke-width", 2);
-
-
-// // Create and update the x and y axes
-// const xAxis = d3.axisBottom(xScale);
-// const yAxis = d3.axisLeft(yScale);
-
-
-// svg
-//     .append("g")
-//     .attr("class", "x-axis")
-//     .attr("transform", `translate(0, ${height})`)
-//     .call(xAxis);
-
-// svg
-//     .append("g")
-//     .attr("class", "y-axis")
-//     .call(yAxis);
-
-// // Add labels for the x and y axes
-// svg
-//     .append("text")
-//     .attr("class", "x-axis-label")
-//     .attr("x", width / 2)
-//     .attr("y", height + margin.top + 20)
-//     .style("text-anchor", "middle")
-//     .text("# in book series");
-
-// svg
-//     .append("text")
-//     .attr("class", "y-axis-label")
-//     .attr("x", -height / 2)
-//     .attr("y", -margin.left + 30)
-//     .style("text-anchor", "middle")
-//     .attr("transform", "rotate(-90)")
-//     .text("Success metric");
-// }
-
-
-
- function creaLineChart(data) {
+ function redrawLineChart(data) {
  // Clear the previous chart if it exists
  d3.select("#lineChart").selectAll("*").remove();
+ console.log("Data for path creation:", data);
 
  const data_norm_rating = create_data_list("norm_rating");
  const data_norm_num_awards = create_data_list("norm_num_awards");
@@ -425,7 +324,7 @@ function updateLineChart() {
  function avg_y(x, attribute){
    var count = 0;
    var attrSum = 0;
-   currentData.forEach((element) => {
+   data.forEach((element) => {
      if(element.num_in_series == x){
        switch(attribute) {
          case "norm_rating":
@@ -623,8 +522,4 @@ svg.selectAll("mylabels")
    .style("text-anchor", "middle")
    .attr("transform", "rotate(-90)")
    .text("Success metric");
-
- 
-
-
  }
